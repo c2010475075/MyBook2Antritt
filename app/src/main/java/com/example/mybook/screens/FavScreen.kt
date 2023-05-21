@@ -3,6 +3,7 @@ package com.example.mybooks.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -42,13 +43,6 @@ fun FavScreen(
   /* var buch : Book? by remember {
         mutableStateOf(null)}*/
 
-
-    /*    AddBookWidget(){
-            buchh -> buch2.add(buchh)
-        }
-        MainContent( bookList = buch2)*/
-
-    //NoteCards(notes = notes)
 
     var showMenu by remember {
         mutableStateOf(false)
@@ -102,6 +96,7 @@ fun FavScreen(
         else{
             Column {
                 TextField(
+                    modifier = Modifier.fillMaxWidth(),
                     value = searchQueryState.value,
                     onValueChange = { searchQueryState.value = it },
                     label = { Text("Suche nach Büchern") }

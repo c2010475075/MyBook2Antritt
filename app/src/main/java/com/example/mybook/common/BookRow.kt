@@ -40,7 +40,12 @@ import com.example.mybooks.navigation.BookScreeens
 
 
 @Composable
-fun BookRow(navController: NavController, book: Book,  onEditClick: (Book) -> Unit ={}, onDeleteClick: (Book)-> Unit ={}, onMarkAsRead: (Book) -> Unit
+fun BookRow(
+    navController: NavController,
+    book: Book,
+    onEditClick: (Book) -> Unit ={},
+    onDeleteClick: (Book)-> Unit ={},
+    onMarkAsRead: (Book) -> Unit
             /*onItemClick: (String) -> Unit = {}*/
 ) {
     var showDetails by remember {
@@ -58,23 +63,6 @@ fun BookRow(navController: NavController, book: Book,  onEditClick: (Book) -> Un
 
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween) {
-            Surface(
-                modifier = Modifier
-                    .padding(15.dp)
-                    .size(80.dp),
-                shape= RectangleShape,
-                elevation = 7.dp
-            ) {
-                // Icon(imageVector = Icons.Default.AccountBox, contentDescription = "movie pic")
-                /* AsyncImage(
-                     model = ImageRequest.Builder(LocalContext.current)
-                         .data(book.images[0])
-                         .crossfade(true)
-                         .build(),
-                     contentDescription = "Movie poster",
-                     contentScale = ContentScale.Crop,
-                 )*/
-            }
 
             Column(modifier = Modifier
                 .padding(14.dp)
