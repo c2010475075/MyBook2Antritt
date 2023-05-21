@@ -36,10 +36,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mybooks.navigation.BookScreeens
 
 
 @Composable
-fun BookRow(/*navController: NavController,*/ book: Book,  onEditClick: (Book) -> Unit ={}, onDeleteClick: (Book)-> Unit ={}, onMarkAsRead: (Book) -> Unit
+fun BookRow(navController: NavController, book: Book,  onEditClick: (Book) -> Unit ={}, onDeleteClick: (Book)-> Unit ={}, onMarkAsRead: (Book) -> Unit
             /*onItemClick: (String) -> Unit = {}*/
 ) {
     var showDetails by remember {
@@ -102,7 +103,7 @@ fun BookRow(/*navController: NavController,*/ book: Book,  onEditClick: (Book) -
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-                IconButton(onClick = { onEditClick(book) }) {
+                IconButton(onClick = { navController.navigate("NeuesBuchAnlegenBearbeiten/${book.isbn}")}) {
                     Icon(imageVector = Icons.Default.Edit, contentDescription = "edit book")
                 }
 

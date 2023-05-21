@@ -13,6 +13,12 @@ import kotlinx.coroutines.flow.StateFlow
 class AddBookViewModel : ViewModel() {
     private val _bookList = mutableStateListOf<Book>()
     val bookList: List<Book> get() = _bookList
+    //var selectedBook by mutableStateOf<Book?>(null)
+    var title by mutableStateOf("")
+    var autor by mutableStateOf("")
+    var isbn by mutableStateOf("")
+    var year by mutableStateOf<Int?>(null)
+    var gelesen by mutableStateOf<Boolean?>(null)
 /*
     private val _sucheingabe = MutableStateFlow("")
     val sucheingabe: StateFlow<String> = _sucheingabe
@@ -38,6 +44,14 @@ class AddBookViewModel : ViewModel() {
         val index = _bookList.indexOfFirst { it.isbn == book.isbn }
         if (index != -1) {
             _bookList[index].gelesen = true
+        }
+    }
+    fun getFilteredBooks(searchQuery: String): List<Book> {
+        val lowercaseQuery = searchQuery.lowercase()
+        return bookList.filter { book ->
+            val lowercaseTitle = book.title.lowercase()
+            val lowercaseAuthor = book.autor.lowercase()
+            lowercaseTitle.contains(lowercaseQuery) || lowercaseAuthor.contains(lowercaseQuery)
         }
     }
     fun editBook(book: Book) {
@@ -66,7 +80,7 @@ class AddBookViewModel : ViewModel() {
     }
 
     fun getBookByIsbn(isbn: String?): Book? {
-        return _bookList.find { it.isbn == isbn }
+        return _bookList.find { it  .isbn == isbn }
     }
 
     fun deleteBook(book: Book) {

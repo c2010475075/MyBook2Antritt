@@ -25,54 +25,94 @@ import com.example.mybooks.validateBuchData
 @Composable
 fun NewBooksScreen(navController: NavController = rememberNavController(), viewModel: AddBookViewModel,isbn: String?, selectedBook: Book?) {
     val context = LocalContext.current
+    val title by remember { mutableStateOf(selectedBook?.title ?: "") }
+    val autor by remember { mutableStateOf(selectedBook?.autor ?: "") }
+    val isbn by remember { mutableStateOf(selectedBook?.isbn ?: "") }
+    val year by remember { mutableStateOf(selectedBook?.year ?.toString()?: "") }
+    val gelesen by remember { mutableStateOf(selectedBook?.gelesen ?.toString()?: "") }
+    TextField(
+        value = title,
+        onValueChange = { newTitle ->
+            // Hier kannst du die Logik für die Validierung des Titels implementieren
+            // und den Wert in das ViewModel aktualisieren
+            viewModel.title = newTitle
+        },
+        label = { Text("Titel") },
+        modifier = Modifier.fillMaxWidth()
+    )
 
-    val newTitle by remember { mutableStateOf(selectedBook?.title ?: "") }
-    val newAuthor by remember { mutableStateOf(selectedBook?.autor ?: "") }
-    // ...
+    // Autor-Eingabefeld
+    TextField(
+        value = autor,
+        onValueChange = { newAuthor ->
+            // Hier kannst du die Logik für die Validierung des Autors implementieren
+            // und den Wert in das ViewModel aktualisieren
+            viewModel.autor = newAuthor
+        },
+        label = { Text("Autor") },
+        modifier = Modifier.fillMaxWidth()
+    )
 
-    // Verwende newTitle und newAuthor in den Eingabefeldern und führe die Validierung durch
+    // Jahres-Eingabefeld
+    TextField(
+        value = year,
+        onValueChange = { newYear ->
+            // Hier kannst du die Logik für die Validierung des Jahres implementieren
+            // und den Wert in das ViewModel aktualisieren
+            viewModel.year = newYear.toIntOrNull() ?: 0
+        },
+        label = { Text("Jahr") },
+        modifier = Modifier.fillMaxWidth()
+    )
 
     Button(
         onClick = {
-            selectedBook?.let { editedBook ->
-                val updatedBook = editedBook.copy(
-                    title = newTitle,
-                    autor = newAuthor
-                )
-                viewModel.editBook(updatedBook)
-                navController.navigate("FavScreen")
-            }
+            // Hier kannst du die Logik für das Speichern oder Aktualisieren des Buchs implementieren
+            // Zum Beispiel kannst du die `editBook`-Funktion im ViewModel aufrufen
+            val editedBook = Book(isbn ?: "", title, autor, year.toIntOrNull() ?: 0)
+            viewModel.editBook(editedBook)
+            navController.popBackStack()
         }
     ) {
         Text(text = "Buch speichern")
     }
 
-    Scaffold(
-        bottomBar = {
-            BottomNavigation(
-                contentColor = Color.White,
-                backgroundColor = MaterialTheme.colors.primary
-            ) {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentRoute = navBackStackEntry?.destination?.route
+        Scaffold(
+            bottomBar = {
+                BottomNavigation(
+                    contentColor = Color.White,
+                    backgroundColor = MaterialTheme.colors.primary
+                ) {
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentRoute = navBackStackEntry?.destination?.route
 
-                BottomNavigationItem(
-                    icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "home") },
-                    selected = currentRoute == "FavScreen",
-                    onClick = {
-                        navController.navigate("FavScreen")
-                    },
-                )
-                BottomNavigationItem(
-                    icon = { Icon(imageVector = Icons.Default.Add, contentDescription = "add") },
-                    selected = currentRoute == "NewBooksScreen",
-                    onClick = {
-                        navController.navigate("NewBooksScreen")
-                    },
-                )
+                    BottomNavigationItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Home,
+                                contentDescription = "home"
+                            )
+                        },
+                        selected = currentRoute == "FavScreen",
+                        onClick = {
+                            navController.navigate("FavScreen")
+                        },
+                    )
+                    BottomNavigationItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "add"
+                            )
+                        },
+                        selected = currentRoute == "NewBooksScreen",
+                        onClick = {
+                            navController.navigate("NewBooksScreen")
+                        },
+                    )
+                }
             }
-        }
-        /*        topBar = {
+            /*        topBar = {
                    TopAppBar(backgroundColor = Color.Green, elevation = 3.dp){
                        Row{
                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Arrow Back",
@@ -86,94 +126,102 @@ fun NewBooksScreen(navController: NavController = rememberNavController(), viewM
                    }
                }
            )*/) {
-        var title by remember {
-            mutableStateOf("")
-        }
-        var autor by remember {
-            mutableStateOf("")
-        }
+            var title by remember {
+                mutableStateOf("")
+            }
+            var autor by remember {
+                mutableStateOf("")
+            }
 
-        var isbn by remember {
-            mutableStateOf("")
-        }
-        var year by remember {
-            mutableStateOf("")
-        }
-        var showErrorSnackbar by remember { mutableStateOf(false) }
+            var isbn by remember {
+                mutableStateOf("")
+            }
+            var year by remember {
+                mutableStateOf("")
+            }
+            var showErrorSnackbar by remember { mutableStateOf(false) }
 
-        Column(modifier = Modifier.padding(16.dp)){
-            Text(text = "Add a Book",
-                style = MaterialTheme.typography.h5,
-                color = MaterialTheme.colors.secondaryVariant)
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "Add a Book",
+                    style = MaterialTheme.typography.h5,
+                    color = MaterialTheme.colors.secondaryVariant
+                )
 
-            OutlinedTextField(
-                value = title,
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                onValueChange = {title = it},
-                label = { Text(text = "titel")},
-                isError = false)
-            OutlinedTextField(
-                value = autor,
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                onValueChange = {autor = it},
-                label = { Text(text = "autor")},
-                isError = false)
-            OutlinedTextField(
-                value = isbn,
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                onValueChange = {isbn = it},
-                label = { Text(text = "isbn")},
-                isError = false)
+                OutlinedTextField(
+                    value = title,
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = { title = it },
+                    label = { Text(text = "titel") },
+                    isError = false
+                )
+                OutlinedTextField(
+                    value = autor,
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = { autor = it },
+                    label = { Text(text = "autor") },
+                    isError = false
+                )
+                OutlinedTextField(
+                    value = isbn,
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = { isbn = it },
+                    label = { Text(text = "isbn") },
+                    isError = false
+                )
 
 
-            OutlinedTextField(
-                value = year,
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                onValueChange = {year = it },
-                label = { Text("year")},
-                isError = false)
+                OutlinedTextField(
+                    value = year,
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = { year = it },
+                    label = { Text("year") },
+                    isError = false
+                )
 
-            /*OutlinedTextField(value = text, onValueChange = {value -> text= value },
+                /*OutlinedTextField(value = text, onValueChange = {value -> text= value },
         label = { Text(text = "Name")})*/
 
-            Button(
-                modifier = Modifier.padding(16.dp),
-                onClick = {
-                    val errors = validateBuchData(title, autor, isbn, year.toInt())
-                    if (errors.isEmpty() && title.isNotEmpty() && autor.isNotEmpty() &&isbn.isNotEmpty() &&year.isNotEmpty() ) {
+                Button(
+                    modifier = Modifier.padding(16.dp),
+                    onClick = {
+                        val errors = validateBuchData(title, autor, isbn, year.toInt())
+                        if (errors.isEmpty() && title.isNotEmpty() && autor.isNotEmpty() && isbn.isNotEmpty() && year.isNotEmpty()) {
 
-                        val newBook = Book(title,autor,isbn, year.toInt())
+                            val newBook = Book(title, autor, isbn, year.toInt())
 
-                        viewModel.addBook(newBook)
-                        //onSaveBuch(newBook)
-                       navController.popBackStack()
-                    } else {
-                        for (error in errors) {
-                            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                            viewModel.addBook(newBook)
+                            //onSaveBuch(newBook)
+                            navController.popBackStack()
+                        } else {
+                            for (error in errors) {
+                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    })
+                { Text(text = "Save") }
+            }
+            if (showErrorSnackbar) {
+                Snackbar(
+                    modifier = Modifier.padding(16.dp),
+                    action = {
+                        Button(
+                            onClick = { showErrorSnackbar = false }
+                        ) {
+                            Text("OK")
                         }
                     }
-                })
-            {  Text(text = "Save")}}
-        if (showErrorSnackbar) {
-            Snackbar(
-                modifier = Modifier.padding(16.dp),
-                action = {
-                    Button(
-                        onClick = { showErrorSnackbar = false }
-                    ) {
-                        Text("OK")
-                    }
+                ) {
+                    Text("Bitte überprüfe die eingegebenen Daten.")
                 }
-            ) {
-                Text("Bitte überprüfe die eingegebenen Daten.")
             }
-        }
 
-    }}
+        }
+    }
 
 
 

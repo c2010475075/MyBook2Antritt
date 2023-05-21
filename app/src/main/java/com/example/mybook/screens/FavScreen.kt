@@ -1,6 +1,7 @@
 package com.example.mybooks.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -11,6 +12,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.runtime.*
@@ -22,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.mybook.SortBooks
 
 import com.example.mybooks.common.BookRow
 import com.example.mybooks.moduls.Book
@@ -45,10 +49,12 @@ fun FavScreen(
         MainContent( bookList = buch2)*/
 
     //NoteCards(notes = notes)
+
     var showMenu by remember {
         mutableStateOf(false)
     }
-
+    val searchQueryState = remember { mutableStateOf("") }
+    var sortMode by remember { mutableStateOf(SortBooks.ASCENDING) }
 
 
     Scaffold(
@@ -75,55 +81,60 @@ fun FavScreen(
             }
         },
         topBar = {
-            TopAppBar(title = { Text(text = "Meine Lieblingsbücher") },
+            TopAppBar(title = { Text(text = "Meine Lieblingsbücher")},
                 actions = {
-                    IconButton(onClick = { showMenu = !showMenu }) {
-                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = "more")
-
-                    }
-                    DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-                        DropdownMenuItem(onClick = { /*TODO*/ }) {
-                            Row {
-                                Icon(
-                                    imageVector = Icons.Default.AddCircle,
-                                    contentDescription = "new book",
-                                    modifier = Modifier.padding(4.dp)
-                                )
-                                Text(
-                                    text = "Neues Buch anlegen/bearbeiten",
-                                    modifier = Modifier
-                                        .padding(4.dp)
-                                        .width(90.dp)
-                                )
-                            }
-
-                        }
-                    }
-                })
+                IconButton(
+                    onClick = { sortMode = SortBooks.ASCENDING},
+                    content = { Icon(Icons.Default.KeyboardArrowUp, "Sortiere aufsteigend") }
+                )
+                IconButton(
+                    onClick = { sortMode = SortBooks.DESCENDING },
+                    content = { Icon(Icons.Default.KeyboardArrowDown, "Sortiere absteigend") }
+                )
+            }
+                )
         }
     ) {
-    val bookList = viewModel.getAllBooks()
+    val bookList = viewModel.bookList
 
         if (bookList.isEmpty()){
             Text(text = "Es wurden noch keine Bücher angelegt")}
         else{
+            Column {
+                TextField(
+                    value = searchQueryState.value,
+                    onValueChange = { searchQueryState.value = it },
+                    label = { Text("Suche nach Büchern") }
+                )
+                val filteredBooks = remember(bookList, searchQueryState.value) {
+                    bookList.filter { book ->
+                        book.title.contains(searchQueryState.value, ignoreCase = true) ||
+                                book.autor.contains(searchQueryState.value, ignoreCase = true)
+                    }
+                }
+                val sortedBooks = remember(filteredBooks, sortMode) {
+                    when (sortMode) {
+                        SortBooks.ASCENDING -> filteredBooks.sortedBy { it.year }
+                        SortBooks.DESCENDING -> filteredBooks.sortedByDescending { it.year }
+                    }
+                }
+
             LazyColumn{
-                items(items = bookList) { book ->
+                items(items = sortedBooks) { book ->
                     BookRow(
                         book = book,
-                        onEditClick = {/* editedBook ->
-                            viewModel.editBook(editedBook)*/
-                                selectedBook ->
-                            navController.navigate("NeuesBuchAnlegenBearbeiten/${selectedBook.isbn}")
+                        onEditClick = {books ->
+                            viewModel.editBook(books)
                         },
                         onDeleteClick = { clickedBook ->
                             viewModel.deleteBook(clickedBook)
                         },
                         onMarkAsRead = { book ->
                             viewModel.markAsRead(book)
-                        })
+                        }, navController = navController
+                    )
 
-                    }}}}}
+                    }}}} }}
 /**@Composable
 fun MainContent(navController: NavController, bookList: List<Book> = listOf()){
 if (bookList.isEmpty()){
@@ -137,6 +148,4 @@ navController.navigate(route = BookScreeens.NewBooksScreen.name)
 }
 }
 }}*/
-
-
 

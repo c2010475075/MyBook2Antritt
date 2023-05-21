@@ -28,7 +28,7 @@ fun BookNavigation(navController: NavController = rememberNavController()){
             NewBooksScreen(navController= navController, viewModel= bookViewModel, isbn = null, selectedBook = null)
         }
         composable(
-            route = "${BookScreeens.NewBooksScreen.name}/{isbn}",
+            route = "NeuesBuchAnlegenBearbeiten/{isbn}",
             arguments = listOf(navArgument("isbn") { type = NavType.StringType })
         ) { backStackEntry ->
             val isbn = backStackEntry.arguments?.getString("isbn")
